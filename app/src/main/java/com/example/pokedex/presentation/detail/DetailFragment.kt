@@ -1,4 +1,6 @@
 package com.example.pokedex.presentation.detail
 
-class DetailFragment {
+import androidx.fragment.app.Fragment
+
+class DetailFragment: Fragment(R.layout.fragment_detail) {
 }
