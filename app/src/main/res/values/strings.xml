@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Pokedex</string>
+    <string name="imagem_do_pokemon">Imagem do Pokemon</string>
+    <string name="nome_do_pokemon">Nome do Pokémon</string>
+
+    <string-array name="pokemon_types">
+        <item>All</item>
+        <item>Fire</item>
+        <item>Water</item>
+        <item>Grass</item>
+    </string-array>
+
+    <string-array name="pokemon_generations">
+        <item>All</item>
+        <item>Gen I</item>
+        <item>Gen II</item>
+    </string-array>
 </resources>
