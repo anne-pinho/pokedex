@@ -12,10 +12,12 @@ constraintlayout = "2.2.1"
 core-splashscreen = "1.0.1"
 fragmentKtx = "1.8.9"
 activityKtx = "1.11.0"
-lifecycleViewModelKtx = "2.9.3"
-lifecycleLiveDataKtx = "2.6.2"
-lifecycleViewModelSavedState = "2.6.2"
+lifecycleViewModelKtx = "2.9.4"
+lifecycleLiveDataKtx = "2.9.4"
+lifecycleViewModelSavedState = "2.9.4"
 navigationFragment = "2.9.5"
+glide = "4.15.1"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +35,8 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLiveDataKtx" }
 androidx-lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "lifecycleViewModelSavedState" }
 androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 
 
 [plugins]

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
+
 }
 
 android {
@@ -35,7 +37,7 @@ android {
     }
 
     buildFeatures{
-        dataBinding = true
+        viewBinding = true
     }
 }
 
@@ -56,4 +58,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 }
