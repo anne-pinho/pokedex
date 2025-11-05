@@ -17,6 +17,9 @@ lifecycleLiveDataKtx = "2.9.4"
 lifecycleViewModelSavedState = "2.9.4"
 navigationFragment = "2.9.5"
 glide = "4.15.1"
+retrofit = "2.9.0"
+gson = "2.10.1"
+okhttpLogging = "5.0.0-alpha.11"
 
 
 [libraries]
@@ -37,6 +40,9 @@ androidx-lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name =
 androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpLogging" }
 
 
 [plugins]

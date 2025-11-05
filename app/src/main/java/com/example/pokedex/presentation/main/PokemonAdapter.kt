@@ -8,36 +8,42 @@ import com.example.pokedex.databinding.ItemPokemonBinding
 import com.example.pokedex.domain.model.Pokemon
 
 class PokemonAdapter(
-    private val pokemonList: List<Pokemon>,
-    private val onClick: (Pokemon) -> Unit
+    private val onItemClick: (Pokemon) -> Unit
 ) : RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder>() {
 
-    inner class PokemonViewHolder(val binding: ItemPokemonBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    private val pokemonList = mutableListOf<Pokemon>()
+
+    fun setItems(list: List<Pokemon>) {
+        pokemonList.clear()
+        pokemonList.addAll(list)
+        notifyDataSetChanged()
+    }
+
+    inner class PokemonViewHolder(private val binding: ItemPokemonBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(pokemon: Pokemon) {
+            binding.txtPokemonName.text = pokemon.name
+            binding.txtPokemonNumber.text = "#${pokemon.number}"
+
+            Glide.with(binding.imgPokemon.context)
+                .load(pokemon.imageUrl)
+                .into(binding.imgPokemon)
+
+            binding.root.setOnClickListener { onItemClick(pokemon) }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
         val binding = ItemPokemonBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
+            LayoutInflater.from(parent.context), parent, false
         )
         return PokemonViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
-        val pokemon = pokemonList[position]
-
-        holder.binding.txtPokemonName.text = pokemon.name
-        holder.binding.txtPokemonNumber.text = "#${pokemon.number}"
-
-        Glide.with(holder.itemView)
-            .load(pokemon.imageUrl)
-            .into(holder.binding.imgPokemon)
-
-        holder.itemView.setOnClickListener {
-            onClick(pokemon)
-        }
+        holder.bind(pokemonList[position])
     }
 
-    override fun getItemCount() = pokemonList.size
+    override fun getItemCount(): Int = pokemonList.size
 }
