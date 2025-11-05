@@ -4,10 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokedex.databinding.FragmentMainBinding
 import com.example.pokedex.domain.model.Pokemon
+import androidx.core.view.isVisible
+import com.example.pokedex.presentation.main.adapter.PokemonAdapter
+
 
 class MainFragment : Fragment() {
 
@@ -15,10 +21,12 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var adapter: PokemonAdapter
+    private val viewModel: PokemonListViewModel by viewModels {
+        ViewModelFactory() // vou te passar essa factory depois
+    }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
@@ -26,40 +34,25 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // 1. Inicializa o adapter
-        adapter = PokemonAdapter { selectedPokemon ->
-            // Aqui vamos abrir o DetailFragment depois
-            // Por enquanto apenas imprimir no Log:
-            println("Pokemon clicado: ${selectedPokemon.name}")
-        }
-
-        // 2. Configura o RecyclerView
+        adapter = PokemonAdapter()
         binding.recyclerPokemon.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerPokemon.adapter = adapter
 
-        // 3. Adiciona dados fake temporários
-        adapter.setItems(
-            listOf(
-                Pokemon(
-                    name = "Bulbasaur",
-                    number = 1,
-                    imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-                    types = listOf("Grass", "Poison"),
-                    height = 7,
-                    weight = 69,
-                    hp = 45,
-                    attack = 49,
-                    defense = 49
-                )
-            )
-        )
+
+        observeState()
     }
 
+    private fun observeState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.state.collect { state ->
+                binding.progressBar.isVisible = state.isLoading
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+                state.error?.let {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                }
+
+                adapter.submitList(state.pokemons)
+            }
+        }
     }
 }
