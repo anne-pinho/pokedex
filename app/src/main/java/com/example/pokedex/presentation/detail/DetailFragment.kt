@@ -4,21 +4,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.pokedex.databinding.FragmentDetailBinding
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class DetailFragment : Fragment() {
 
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: DetailViewModel by viewModels()
+    private val args: DetailFragmentArgs by navArgs()
+
+    private val viewModel: PokemonDetailViewModel by viewModels {
+        DetailViewModelFactory()
+    }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
@@ -28,38 +37,45 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val args = requireArguments()
+        // Carrega dados do Pokémon
+        viewModel.loadPokemon(args.name)
 
-        // Preenche o ViewModel com os dados recebidos
-        viewModel.setPokemonData(
-            name = args.getString("name") ?: "",
-            number = args.getString("number") ?: "",
-            imageUrl = args.getString("imageUrl") ?: "",
-            types = args.getStringArrayList("types") ?: emptyList(),
-            height = args.getInt("height"),
-            weight = args.getInt("weight"),
-            hp = args.getInt("hp"),
-            attack = args.getInt("attack"),
-            defense = args.getInt("defense")
-        )
+        lifecycleScope.launch {
+            viewModel.state.collectLatest { state ->
+                binding.progressBar.isVisible = state.isLoading
 
-        // Observa e preenche UI
-        viewModel.name.observe(viewLifecycleOwner) { binding.txtPokemonName.text = it }
-        viewModel.number.observe(viewLifecycleOwner) { binding.txtPokemonID.text = it }
-        viewModel.height.observe(viewLifecycleOwner) { binding.txtPokemonHeight.text = "Height: $it m" }
-        viewModel.weight.observe(viewLifecycleOwner) { binding.txtPokemontWeight.text = "Weight: $it kg" }
-        viewModel.hp.observe(viewLifecycleOwner) { binding.txtHP.text = "HP: $it" }
-        viewModel.attack.observe(viewLifecycleOwner) { binding.txtAttack.text = "Attack: $it" }
-        viewModel.defense.observe(viewLifecycleOwner) { binding.txtDefense.text = "Defense: $it" }
+                // Só popula a UI quando o Pokémon da API estiver carregado
+                if (state.pokemon != null) {
+                    val pokemon = state.pokemon
+                    binding.txtPokemonName.text = pokemon.name
+                    binding.txtPokemonID.text = "#${pokemon.id}"
+                    binding.txtPokemonType.text = "Type: ${pokemon.types.joinToString(" / ")}"
+                    binding.txtPokemonHeight.text = "Height: ${pokemon.height} m"
+                    binding.txtPokemontWeight.text = "Weight: ${pokemon.weight} kg"
+                    binding.txtHP.text = "HP: ${pokemon.hp}"
+                    binding.txtAttack.text = "Attack: ${pokemon.attack}"
+                    binding.txtDefense.text = "Defense: ${pokemon.defense}"
 
-        viewModel.types.observe(viewLifecycleOwner) {
-            binding.txtPokemonType.text = "Type: ${it.joinToString(" / ")}"
-        }
+                    Glide.with(binding.root)
+                        .load(pokemon.imageUrl)
+                        .into(binding.imgPokemon)
+                } else {
+                    // Limpa os campos enquanto carrega
+                    binding.txtPokemonName.text = ""
+                    binding.txtPokemonID.text = ""
+                    binding.txtPokemonType.text = ""
+                    binding.txtPokemonHeight.text = ""
+                    binding.txtPokemontWeight.text = ""
+                    binding.txtHP.text = ""
+                    binding.txtAttack.text = ""
+                    binding.txtDefense.text = ""
+                    binding.imgPokemon.setImageDrawable(null)
+                }
 
-        viewModel.imageUrl.observe(viewLifecycleOwner) {
-            Glide.with(this)
-                .load(it)
-                .into(binding.imgPokemon)
+                state.error?.let {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

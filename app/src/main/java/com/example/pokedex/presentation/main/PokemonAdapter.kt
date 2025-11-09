@@ -9,14 +9,13 @@ import com.bumptech.glide.Glide
 import com.example.pokedex.databinding.ItemPokemonBinding
 import com.example.pokedex.domain.model.Pokemon
 
-class PokemonAdapter : ListAdapter<Pokemon, PokemonAdapter.PokemonViewHolder>(DiffCallback) {
+class PokemonAdapter(
+    private val onItemClick: (Pokemon) -> Unit
+) : ListAdapter<Pokemon, PokemonAdapter.PokemonViewHolder>(DiffCallback) {
 
     object DiffCallback : DiffUtil.ItemCallback<Pokemon>() {
-        override fun areItemsTheSame(oldItem: Pokemon, newItem: Pokemon) =
-            oldItem.id == newItem.id
-
-        override fun areContentsTheSame(oldItem: Pokemon, newItem: Pokemon) =
-            oldItem == newItem
+        override fun areItemsTheSame(oldItem: Pokemon, newItem: Pokemon) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Pokemon, newItem: Pokemon) = oldItem == newItem
     }
 
     inner class PokemonViewHolder(private val binding: ItemPokemonBinding) :
@@ -29,6 +28,10 @@ class PokemonAdapter : ListAdapter<Pokemon, PokemonAdapter.PokemonViewHolder>(Di
             Glide.with(binding.root.context)
                 .load(pokemon.imageUrl)
                 .into(binding.imgPokemon)
+
+            binding.root.setOnClickListener {
+                onItemClick(pokemon) // <- chama o callback do Fragment
+            }
         }
     }
 
@@ -45,3 +48,5 @@ class PokemonAdapter : ListAdapter<Pokemon, PokemonAdapter.PokemonViewHolder>(Di
         holder.bind(getItem(position))
     }
 }
+
+

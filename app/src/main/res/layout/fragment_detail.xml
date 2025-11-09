@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
         android:id="@+id/imgPokemon"
@@ -51,28 +62,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            >
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/txtPokemonType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Type: Grass / Poison"
                 android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/txtPokemonHeight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Height: 0.7m "
                 android:layout_marginTop="4dp"
                 android:textSize="16sp"/>
+
             <TextView
                 android:id="@+id/txtPokemontWeight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Weight: 6.9kg"
                 android:layout_marginTop="4dp"
                 android:textSize="16sp"/>
 
@@ -80,24 +88,20 @@
                 android:id="@+id/txtHP"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="HP: 45"
                 android:layout_marginTop="4dp"/>
 
             <TextView
                 android:id="@+id/txtAttack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Attack: 49"
                 android:layout_marginTop="4dp"/>
 
             <TextView
                 android:id="@+id/txtDefense"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Defense: 49"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

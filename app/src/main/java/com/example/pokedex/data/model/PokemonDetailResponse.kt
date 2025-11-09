@@ -1,5 +1,7 @@
 package com.example.pokedex.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class PokemonDetailResponse(
     val id: Int,
     val name: String,
@@ -11,6 +13,16 @@ data class PokemonDetailResponse(
 )
 
 data class Sprites(
+    val front_default: String?,
+    val other: OtherSprites?
+)
+data class OtherSprites(
+    @SerializedName("official-artwork")
+    val officialArtwork: OfficialArtwork?
+)
+
+data class OfficialArtwork(
+    @SerializedName("front_default")
     val front_default: String?
 )
 

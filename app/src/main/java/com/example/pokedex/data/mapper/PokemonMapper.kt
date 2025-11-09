@@ -22,7 +22,7 @@ fun PokemonResult.toPokemon(): Pokemon {
 }
 
 fun PokemonDetailResponse.toPokemonDetail(): PokemonDetail {
-    val imageUrl = sprites.front_default ?: ""
+    val imageUrl = sprites.other?.officialArtwork?.front_default ?: sprites.front_default ?: ""
 
     val types = types.map { it.type.name.replaceFirstChar { c -> c.uppercase() } }
 

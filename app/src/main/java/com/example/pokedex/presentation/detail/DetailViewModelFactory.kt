@@ -1,23 +1,21 @@
-package com.example.pokedex.presentation.main
+package com.example.pokedex.presentation.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.pokedex.data.remote.RetrofitInstance
 import com.example.pokedex.data.repository.PokemonRepositoryImpl
 import com.example.pokedex.domain.usecase.GetPokemonDetailUseCase
-import com.example.pokedex.domain.usecase.GetPokemonListUseCase
 
-class ViewModelFactory : ViewModelProvider.Factory {
+class DetailViewModelFactory : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val api = RetrofitInstance.api
         val repository = PokemonRepositoryImpl(api)
 
-        val getPokemonListUseCase = GetPokemonListUseCase(repository)
         val getPokemonDetailUseCase = GetPokemonDetailUseCase(repository)
 
-        if (modelClass.isAssignableFrom(PokemonListViewModel::class.java)) {
-            return PokemonListViewModel(getPokemonListUseCase, getPokemonDetailUseCase) as T
+        if (modelClass.isAssignableFrom(PokemonDetailViewModel::class.java)) {
+            return PokemonDetailViewModel(getPokemonDetailUseCase) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel class")

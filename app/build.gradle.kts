@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+    alias(libs.plugins.navigationSafeargs)
 }
 
 android {
@@ -59,9 +60,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
-
-    // SplashScreen
-    implementation(libs.androidx.core.splashscreen)
 
     // Glide (imagens)
     implementation(libs.glide)
