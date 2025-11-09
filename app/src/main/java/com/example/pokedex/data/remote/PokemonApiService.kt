@@ -11,7 +11,7 @@ interface PokemonApiService {
     // Lista de pokémons
     @GET("pokemon")
     suspend fun getPokemonList(
-        @Query("limit") limit: Int = 100
+        @Query("limit") limit: Int = 200
     ): PokemonListResponse
 
     // Detalhe do Pokémon por ID ou nome

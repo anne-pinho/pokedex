@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokedex.databinding.FragmentMainBinding
 import com.example.pokedex.presentation.main.adapter.PokemonAdapter
 import kotlinx.coroutines.flow.collectLatest
-import android.graphics.Color
 
 class MainFragment : Fragment() {
 
@@ -28,6 +27,7 @@ class MainFragment : Fragment() {
 
     private var selectedType = ""
     private var selectedGen = ""
+    private var searchQuery = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +39,8 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         setupRecycler()
         setupSpinners()
@@ -74,7 +76,7 @@ class MainFragment : Fragment() {
         binding.spinnerTypePokemon.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedType = if (position == 0) "" else parent?.getItemAtPosition(position).toString()
-                viewModel.filterPokemons(typeFilter = selectedType, genFilter = selectedGen)
+                applyFilters()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -82,39 +84,28 @@ class MainFragment : Fragment() {
         binding.spinnerGenerationPokemon.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedGen = if (position == 0) "" else parent?.getItemAtPosition(position).toString()
-                viewModel.filterPokemons(typeFilter = selectedType, genFilter = selectedGen)
+                applyFilters()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
     private fun setupSearch() {
-// Garantir placeholder visível
-        binding.searchFilterPokemon.apply {
-            // Define o hint
-            queryHint = "Buscar Pokémon"
+        binding.searchFilterPokemon.queryHint = "Buscar Pokémon"
+        binding.searchFilterPokemon.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
 
-            // Mantém o hint visível mesmo sem texto digitado
-            setQuery("", false)
+            override fun onQueryTextChange(newText: String?): Boolean {
+                searchQuery = newText ?: ""
+                applyFilters()
+                return true
+            }
+        })
 
-            // Opcional: muda a cor do placeholder
-            val searchEditText = findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-            searchEditText.setHintTextColor(Color.GRAY)
+    }
 
-            // Listener para filtrar em tempo real
-            setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean = false
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    val filtered = viewModel.state.value.pokemons.filter { pokemon ->
-                        pokemon.name.contains(newText ?: "", ignoreCase = true)
-                    }
-                    adapter.submitList(filtered)
-                    return true
-                }
-            })
-        }
-
+    private fun applyFilters() {
+        viewModel.filterPokemons(typeFilter = selectedType, genFilter = selectedGen, searchQuery = searchQuery)
     }
 
     private fun observeState() {

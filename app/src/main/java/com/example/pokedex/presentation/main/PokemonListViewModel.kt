@@ -3,10 +3,9 @@ package com.example.pokedex.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.domain.model.Pokemon
-import com.example.pokedex.domain.usecase.GetPokemonListUseCase
 import com.example.pokedex.domain.usecase.GetPokemonDetailUseCase
+import com.example.pokedex.domain.usecase.GetPokemonListUseCase
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,7 +18,7 @@ class PokemonListViewModel(
     private val _state = MutableStateFlow(PokemonListState())
     val state: StateFlow<PokemonListState> = _state
 
-    private var allPokemons: List<Pokemon> = emptyList()
+    private var _allPokemons: MutableList<Pokemon> = mutableListOf()
 
     init {
         loadPokemons()
@@ -28,34 +27,41 @@ class PokemonListViewModel(
     fun loadPokemons() {
         viewModelScope.launch {
             _state.value = PokemonListState(isLoading = true)
+
             try {
-                // 1️⃣ Lista básica
                 val pokemons = getPokemonListUseCase()
 
-                // 2️⃣ Preencher tipos usando coroutines paralelas
-                val pokemonsWithTypes = pokemons.map { pokemon ->
+                // Inicialmente mostra só nomes e imagens
+                _allPokemons = pokemons.toMutableList()
+                _state.value = PokemonListState(pokemons = _allPokemons)
+
+                // Agora carrega tipos em paralelo
+                _allPokemons.map { pokemon ->
                     async {
-                        val detail = getPokemonDetailUseCase(pokemon.name)
-                        pokemon.copy(types = detail.types.map { it.lowercase() })
+                        val detail = try { getPokemonDetailUseCase(pokemon.name) } catch (e: Exception) { null }
+                        detail?.types?.let { types ->
+                            val index = _allPokemons.indexOfFirst { it.id == pokemon.id }
+                            if (index >= 0) {
+                                _allPokemons[index] = _allPokemons[index].copy(types = types)
+                                // Atualiza a lista filtrada (ou completa)
+                                _state.value = _state.value.copy(pokemons = _allPokemons)
+                            }
+                        }
                     }
-                }.awaitAll()
+                }.forEach { it.await() }
 
-                // 3️⃣ Guardar lista completa
-                allPokemons = pokemonsWithTypes
-
-                // 4️⃣ Atualizar estado
-                _state.value = PokemonListState(pokemons = pokemonsWithTypes)
             } catch (e: Exception) {
                 _state.value = PokemonListState(error = e.message ?: "Erro inesperado")
             }
         }
     }
 
-    fun filterPokemons(typeFilter: String = "", genFilter: String = "") {
-        val filtered = allPokemons.filter { pokemon ->
-            val matchesType = typeFilter.isEmpty() || pokemon.types.contains(typeFilter.lowercase())
+    fun filterPokemons(typeFilter: String = "", genFilter: String = "", searchQuery: String = "") {
+        val filtered = _allPokemons.filter { pokemon ->
+            val matchesType = typeFilter.isEmpty() || pokemon.types.contains(typeFilter)
             val matchesGen = genFilter.isEmpty() || getGeneration(pokemon.id) == genFilter
-            matchesType && matchesGen
+            val matchesSearch = searchQuery.isEmpty() || pokemon.name.contains(searchQuery, ignoreCase = true)
+            matchesType && matchesGen && matchesSearch
         }
         _state.value = _state.value.copy(pokemons = filtered)
     }
@@ -70,7 +76,7 @@ class PokemonListViewModel(
             in 650..721 -> "Gen VI"
             in 722..809 -> "Gen VII"
             in 810..898 -> "Gen VIII"
-            else -> "Unknown"
+            else -> ""
         }
     }
 }
