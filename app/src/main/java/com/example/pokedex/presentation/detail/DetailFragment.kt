@@ -14,9 +14,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
-import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentDetailBinding
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class DetailFragment : Fragment() {
 
@@ -26,7 +25,7 @@ class DetailFragment : Fragment() {
     private val args: DetailFragmentArgs by navArgs()
 
     private val viewModel: PokemonDetailViewModel by viewModels {
-        DetailViewModelFactory()
+        DetailViewModelFactory(requireContext())
     }
 
     override fun onCreateView(
@@ -40,15 +39,18 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Toolbar transparente com botão de voltar e título
         val activity = activity as? AppCompatActivity
         activity?.supportActionBar?.show()
         activity?.supportActionBar?.title = args.name
         activity?.supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         activity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // Carregar Pokémon
         viewModel.loadPokemon(args.name)
-        lifecycleScope.launchWhenStarted {
-            viewModel.state.collectLatest { state ->
+
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
                 binding.lottieLoading.isVisible = state.isLoading
                 binding.detailContent.isVisible = !state.isLoading
 
@@ -65,6 +67,14 @@ class DetailFragment : Fragment() {
                     Glide.with(binding.root)
                         .load(pokemon.imageUrl)
                         .into(binding.imgPokemon)
+
+                    // Atualizar botão de favoritos
+                    binding.btnFavorite.text = if (state.isFavorite) "Remover dos favoritos" else "Adicionar aos favoritos"
+
+                    // Clique no botão de favoritos
+                    binding.btnFavorite.setOnClickListener {
+                        viewModel.toggleFavorite()
+                    }
                 }
 
                 state.error?.let {
@@ -73,7 +83,6 @@ class DetailFragment : Fragment() {
             }
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

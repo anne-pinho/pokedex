@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     alias(libs.plugins.navigationSafeargs)
+    kotlin("kapt")
 }
 
 android {
@@ -81,4 +82,10 @@ dependencies {
 
     //Lottie
     implementation(libs.lottie)
+
+    //Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
 }

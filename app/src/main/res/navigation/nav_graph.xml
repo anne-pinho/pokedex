@@ -20,15 +20,22 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.pokedex.presentation.main.MainFragment"
+        android:label="Pokemons"
         tools:layout="@layout/fragment_main">
+
         <action
-            android:id="@+id/action_mainFragment_to_detailFragment"
+            android:id="@+id/actionMainFragmentToDetailFragment"
             app:destination="@id/detailFragment" />
+
+        <action
+            android:id="@+id/actionMainFragmentToFavoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.pokedex.presentation.detail.DetailFragment"
+        android:label="Detalhes"
         tools:layout="@layout/fragment_detail">
 
         <argument
@@ -43,6 +50,16 @@
             android:name="imageUrl"
             app:argType="string" />
 
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.pokedex.presentation.favorites.FavoritesFragment"
+        android:label="Favoritos"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/actionFavoritesFragmentToDetailFragment"
+            app:destination="@id/detailFragment" />
     </fragment>
 
 </navigation>

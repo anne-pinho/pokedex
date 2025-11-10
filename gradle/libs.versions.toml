@@ -14,14 +14,15 @@ activityKtx = "1.11.0"
 lifecycleViewModelKtx = "2.9.4"
 lifecycleLiveDataKtx = "2.9.4"
 lifecycleViewModelSavedState = "2.9.4"
-navigationFragment = "2.9.5"
+navigationFragment = "2.9.6"
 glide = "4.15.1"
 retrofit = "2.9.0"
 gson = "2.10.1"
 okhttpLogging = "5.0.0-alpha.11"
 kotlinxCoroutinesCore = "1.7.3"
-kotlinxCoroutinesAndroid = "1.7.3"
+kotlinxCoroutinesAndroid = "1.8.1"
 lottie = "6.0.1"
+room = "2.8.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,10 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationFragment" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
 
 
 [plugins]

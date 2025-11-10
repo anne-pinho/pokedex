@@ -1,9 +1,9 @@
 package com.example.pokedex.presentation.main
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentMainBinding
 import com.example.pokedex.presentation.main.adapter.PokemonAdapter
 import kotlinx.coroutines.flow.collectLatest
@@ -40,7 +41,16 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as? AppCompatActivity)?.supportActionBar?.hide()
+        val activity = activity as? AppCompatActivity
+        activity?.supportActionBar?.apply {
+            show()
+            title = "Pokédex"
+            setDisplayHomeAsUpEnabled(false)
+            setHomeButtonEnabled(false)
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
+        setHasOptionsMenu(true)
 
         setupRecycler()
         setupSpinners()
@@ -94,14 +104,12 @@ class MainFragment : Fragment() {
         binding.searchFilterPokemon.queryHint = "Buscar Pokémon"
         binding.searchFilterPokemon.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchQuery = newText ?: ""
                 applyFilters()
                 return true
             }
         })
-
     }
 
     private fun applyFilters() {
@@ -114,6 +122,21 @@ class MainFragment : Fragment() {
                 binding.progressBar.isVisible = state.isLoading
                 adapter.submitList(state.pokemons)
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_favorites -> {
+                findNavController().navigate(MainFragmentDirections.actionMainFragmentToFavoritesFragment())
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
